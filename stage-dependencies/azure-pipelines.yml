@@ -22,14 +22,13 @@ stages:
 
       - job: 'job_3'
         displayName: 'Try filtered array'
+        dependsOn:
+          - job_1
+          - job_2
         variables:
-          animals:
-            - name: tiger
-              age: 2
-            - name: lion
-              age: 3
+          var_list: $[ dependencies.*.outputs['output_var.my_var'] ]
         steps:
-          - bash: echo "$(variables.animals.*.name)"
+          - bash: echo "var_list $(var_list)"
 
   - stage: 'stage_2'
     displayName: 'Stage 2'
