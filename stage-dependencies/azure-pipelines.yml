@@ -26,7 +26,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.stage_1.outputs['*.output_var.my_var'], 'cat')
+        containsValue(dependencies.stage_1.outputs['*.output_var.my_var'], 'cat')
       )
     jobs:
       - job: 'show_var_value'
