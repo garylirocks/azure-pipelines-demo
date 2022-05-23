@@ -20,6 +20,17 @@ stages:
           - bash: echo "##vso[task.setvariable variable=my_var;isOutput=true]dog"
             name: 'output_var'
 
+      - job: 'job_3'
+        displayName: 'Try filtered array'
+        variables:
+          animals:
+            - name: tiger
+              age: 2
+            - name: lion
+              age: 3
+        steps:
+          - bash: echo "$(variables.animals.*.name)"
+
   - stage: 'stage_2'
     displayName: 'Stage 2'
     dependsOn: 'stage_1'
