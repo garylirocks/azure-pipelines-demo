@@ -20,22 +20,10 @@ stages:
           - bash: echo "##vso[task.setvariable variable=my_var;isOutput=true]dog"
             name: 'output_var'
 
-      - job: 'job_3'
-        displayName: 'Try filtered array'
-        dependsOn:
-          - job_1
-          - job_2
-        variables:
-          var_list: $[ dependencies.*.outputs['output_var.my_var'] ]
-          var_list_2: $[ dependencies.*.outputs.output_var.my_var ]
-        steps:
-          - bash: |
-              echo "var_list $(var_list)"
-              echo "var_list_2 $(var_list_2)"
-
   - stage: 'stage_2'
     displayName: 'Stage 2'
     dependsOn: 'stage_1'
+    # NOTE: '*' doesn't work here
     condition: |
       and(
         succeeded(),
@@ -47,6 +35,7 @@ stages:
         variables:
           var_job1: $[ stageDependencies.stage_1.job_1.outputs['output_var.my_var'] ]
           var_job2: $[ stageDependencies.stage_1.job_2.outputs['output_var.my_var'] ]
+          # NOTE: '*' doesn't work here
           all_vars: $[ stageDependencies.stage_1.*.outputs['output_var.my_var'] ]
         steps:
           - bash: |
