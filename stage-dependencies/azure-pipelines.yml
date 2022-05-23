@@ -1,5 +1,5 @@
 trigger:
-  - master
+  - main
 
 pool:
   vmImage: ubuntu-latest
@@ -8,26 +8,30 @@ stages:
   - stage: 'stage_1'
     displayName: 'Stage 1'
     jobs:
-      - job: 's1j1'
+      - job: 'job_1'
         displayName: 'Job 1'
         steps:
-          - bash: echo "##vso[task.setvariable variable=MyVar;isOutput=true]true"
+          - bash: echo "##vso[task.setvariable variable=my_var;isOutput=true]cat"
             name: 'output_var'
 
-      - job: 's1j2'
+      - job: 'job_2'
         displayName: 'Job 2'
         steps:
-          - bash: echo "##vso[task.setvariable variable=MyVar;isOutput=true]true"
+          - bash: echo "##vso[task.setvariable variable=my_var;isOutput=true]dog"
             name: 'output_var'
 
   - stage: 'stage_2'
     displayName: 'Stage 2'
     dependsOn: 'stage_1'
     jobs:
-      - job: 's2j1'
-        displayName: 'Ouput'
+      - job: 'show_var_value'
+        displayName: 'Show variable values from last stage'
         variables:
-          # map the output variable from JobA into this job
-          varsFromLastStage: $[ stageDependencies.stage_1.*.outputs['output_var.MyVar'] ]
+          var_job1: $[ stageDependencies.stage_1.job_1.outputs['output_var.my_var'] ]
+          var_job2: $[ stageDependencies.stage_1.job_2.outputs['output_var.my_var'] ]
+          all_vars: $[ stageDependencies.stage_1.*.outputs['output_var.my_var'] ]
         steps:
-          - bash: echo $(varsFromLastStage)
+          - bash: |
+              echo "stage_1.job_1.output_var.my_var: $(var_job1)"
+              echo "stage_1.job_2.output_var.my_var: $(var_job2)"
+              echo "stage_1.*.output_var.my_var: $(all_vars)"
