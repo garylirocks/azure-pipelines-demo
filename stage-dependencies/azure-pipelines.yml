@@ -1,0 +1,33 @@
+trigger:
+  - master
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: 'stage_1'
+    displayName: 'Stage 1'
+    jobs:
+      - job: 's1j1'
+        displayName: 'Job 1'
+        steps:
+          - bash: echo "##vso[task.setvariable variable=MyVar;isOutput=true]true"
+            name: 'output_var'
+
+      - job: 's1j2'
+        displayName: 'Job 2'
+        steps:
+          - bash: echo "##vso[task.setvariable variable=MyVar;isOutput=true]true"
+            name: 'output_var'
+
+  - stage: 'stage_2'
+    displayName: 'Stage 2'
+    dependsOn: 'stage_1'
+    jobs:
+      - job: 's2j1'
+        displayName: 'Ouput'
+        variables:
+          # map the output variable from JobA into this job
+          varsFromLastStage: $[ stageDependencies.stage_1.*.outputs['output_var.MyVar'] ]
+        steps:
+          - bash: echo $(varsFromLastStage)
