@@ -27,8 +27,11 @@ stages:
           - job_2
         variables:
           var_list: $[ dependencies.*.outputs['output_var.my_var'] ]
+          var_list_2: $[ dependencies.*.outputs.output_var.my_var ]
         steps:
-          - bash: echo "var_list $(var_list)"
+          - bash: |
+              echo "var_list $(var_list)"
+              echo "var_list_2 $(var_list_2)"
 
   - stage: 'stage_2'
     displayName: 'Stage 2'
